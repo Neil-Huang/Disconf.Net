@@ -7,3 +7,8 @@ Disconf的.net版，含配置管理平台及客户端
  
  详细介绍请点击链接
  http://www.cnblogs.com/qkbao/p/6638721.html
+
+
+ # huj增加内容
+ 1 把client移到Disconf.Net目录
+ 2 创建了一个例子的完整脚本，登陆帐号：admin 密码：admin
