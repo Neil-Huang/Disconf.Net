@@ -78,11 +78,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Disconf.Net.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Disconf.Net.Client.1.1.0\lib\net45\Disconf.Net.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Disconf.Net.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Disconf.Net.Core.1.1.0\lib\net45\Disconf.Net.Core.dll</HintPath>
+      <HintPath>..\Disconf.Net.Client\obj\Debug\Disconf.Net.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
@@ -329,6 +325,10 @@
     <ProjectReference Include="..\Disconf.Net.Application\Disconf.Net.Application.csproj">
       <Project>{9e5e62c4-bc57-4593-9428-f0946dbcbb89}</Project>
       <Name>Disconf.Net.Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Disconf.Net.Core\Disconf.Net.Core.csproj">
+      <Project>{f08853ff-4f87-468e-a06a-68e4ce0e3da3}</Project>
+      <Name>Disconf.Net.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Disconf.Net.Domain\Disconf.Net.Domain.csproj">
       <Project>{4c522fd9-9e4d-4636-8735-8a683a72fdf2}</Project>

@@ -23,14 +23,7 @@ namespace Disconf.Net.Client.Rules
         {
             if (action != null)
             {
-                if (this.Action == null)
-                {
-                    this.Action = action;
-                }
-                else
-                {
-                    this.Action += action;
-                }
+                this.Action += action;
             }
             return this;
         }
@@ -43,18 +36,22 @@ namespace Disconf.Net.Client.Rules
                 {
                     try
                     {
-                        object value;
-                        if (map.TypeConvert != null)
+                        var pi = map.GetPropertyInfo(this.DefaultPropName);
+                        if (pi != null)
                         {
-                            value = map.TypeConvert(changedValue);
+                            object value;
+                            if (map.TypeConvert != null)
+                            {
+                                value = map.TypeConvert(changedValue);
+                            }
+                            else
+                            {
+                                value = Convert.ChangeType(changedValue, map.PropertyInfo.PropertyType);
+                            }
+                            map.PropertyInfo.SetValue(map.Entity, value);
                         }
-                        else
-                        {
-                            value = Convert.ChangeType(changedValue, map.PropertyInfo.PropertyType);
-                        }
-                        map.PropertyInfo.SetValue(map.Entity, value);
                     }
-                    catch { }
+                    catch { }//这里暂时没想好怎么传递异常
                 }
             }
             if (this.Action != null)
@@ -84,9 +81,16 @@ namespace Disconf.Net.Client.Rules
 
         public IItemRule SetProperty(object entity, PropertyInfo prop, Func<string, object> typeConvert = null)
         {
+            return this.SetProperty(entity, null, null, prop, typeConvert);
+        }
+
+        private IItemRule SetProperty(object entity, Type entityType, string propName, PropertyInfo prop, Func<string, object> typeConvert = null)
+        {
             this._list.Add(new PropertyMap
             {
                 Entity = entity,
+                EntityType = entityType,
+                PropertyName = propName,
                 PropertyInfo = prop,
                 TypeConvert = typeConvert
             });
@@ -95,12 +99,7 @@ namespace Disconf.Net.Client.Rules
 
         public IItemRule SetProperty<T>(T entity, string propName = null, Func<string, object> typeConvert = null)
         {
-            PropertyInfo prop = typeof(T).GetProperty(string.IsNullOrWhiteSpace(propName) ? this.DefaultPropName : propName);
-            if (prop != null)
-            {
-                return this.SetProperty(entity, prop, typeConvert);
-            }
-            return this;
+            return this.SetProperty(entity, typeof(T), propName, null, typeConvert);
         }
 
         public IItemRule SetStaticProperty(PropertyInfo prop, Func<string, object> typeConvert = null)
@@ -120,8 +119,32 @@ namespace Disconf.Net.Client.Rules
         private class PropertyMap
         {
             public object Entity { get; set; }
+            public Type EntityType { get; set; }
+            public string PropertyName { get; set; }
             public PropertyInfo PropertyInfo { get; set; }
             public Func<string, object> TypeConvert { get; set; }
+            public PropertyInfo GetPropertyInfo(string defaultPropertyName)
+            {
+                /*
+                因为无法确认SetProperty和MapTo方法被调用的先后顺序
+                所以通过PropertyName来得到对应的PropertyInfo这个过程只能在最后调用
+                */
+                PropertyInfo pi = this.PropertyInfo;
+                if (pi == null)
+                {
+                    string propName = this.PropertyName;
+                    if (string.IsNullOrWhiteSpace(propName))
+                    {
+                        propName = defaultPropertyName;
+                    }
+                    if (!string.IsNullOrWhiteSpace(propName))
+                    {
+                        pi = this.EntityType.GetProperty(propName);
+                    }
+                    this.PropertyInfo = pi;
+                }
+                return pi;
+            }
         }
     }
 }

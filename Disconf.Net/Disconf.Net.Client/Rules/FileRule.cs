@@ -30,14 +30,7 @@ namespace Disconf.Net.Client.Rules
         {
             if (action != null)
             {
-                if (this.Action == null)
-                {
-                    this.Action = action;
-                }
-                else
-                {
-                    this.Action += action;
-                }
+                this.Action += action;
             }
             return this;
         }

@@ -13,9 +13,10 @@ namespace Disconf.Net.Client.Fetch
 {
     public class Fetcher : IFetcher
     {
-        const string GetConfigResource = "/api/get";
-        const string GetAllConfigsResource = "/api/getall";
-        const string GetZkHostsResource = "/api/getzk";
+        const string GetConfigResource = "/api/ZooKeeper/GetConfig";
+        const string GetAllConfigsResource = "/api/ZooKeeper/GetConfigs";
+        const string GetZkHostsResource = "/api/ZooKeeper/GetZookeeperHost";
+        const string GetLastChangedTimeResource = "/api/ZooKeeper/GetConfigLastTime";
 
         private string _apiHost;
         private RetryPolicy _policy;
@@ -54,7 +55,7 @@ namespace Disconf.Net.Client.Fetch
                 return res;
             };
             IRestResponse response = null;
-            //如果CallApi失败，抛出的异常由外部调用方，即ConfigManager来处理，该部分不与Warn产生交集
+            //如果CallApi失败，抛出的异常由外部调用方，即ConfigManager来处理，该部分不与异常处理产生交集
             if (this._policy != null)
             {
                 response = this._policy.ExecuteAction(func);
@@ -75,6 +76,14 @@ namespace Disconf.Net.Client.Fetch
             }
             var response = this.CallApi(request);
             return response.Content;
+        }
+
+        public string GetLastChangedTime(FetchFilter filter)
+        {
+            return this.CallApi(GetLastChangedTimeResource, request =>
+            {
+                request.AddJsonBody(filter);
+            });
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Disconf.Net.Client.Utils;
-using Disconf.Net.Core.Model;
+﻿using Disconf.Net.Core.Model;
 using Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling;
 using Newtonsoft.Json;
 using System;
@@ -8,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Disconf.Net.Client.Fetch
 {
@@ -52,12 +52,14 @@ namespace Disconf.Net.Client.Fetch
                     files = fileDic.Keys;
                     foreach (var key in fileDic.Keys)
                     {
-                        this.SaveFile(key, fileDic[key]);
+                        this.SaveAndCopyFile(key, fileDic[key]);
                     }
+                    this.SaveFileList(files);
                 }
-                if (dic.ContainsKey(ConfigType.File) && dic[ConfigType.Item] != null)
+                if (dic.ContainsKey(ConfigType.Item) && dic[ConfigType.Item] != null)
                 {
                     items = dic[ConfigType.Item];
+                    this.SaveItems(items);
                 }
             }
         }
@@ -70,7 +72,7 @@ namespace Disconf.Net.Client.Fetch
         {
             var filter = this.GetFilter(configName, ConfigType.File);
             string content = this._fetcher.GetConfig(filter);
-            this.SaveFile(configName, content);
+            this.SaveAndCopyFile(configName, content);
             return true;
         }
         /// <summary>
@@ -81,7 +83,9 @@ namespace Disconf.Net.Client.Fetch
         public string GetItem(string configName)
         {
             var filter = this.GetFilter(configName, ConfigType.Item);
-            return this._fetcher.GetConfig(filter);
+            var value = this._fetcher.GetConfig(filter);
+            this.AddOrSetItem(configName, value);
+            return value;
         }
         private RetryPolicy GetFixedRetryPolicy(int retryCount, int retryIntervalSeconds)
         {
@@ -99,12 +103,114 @@ namespace Disconf.Net.Client.Fetch
                 ConfigName = configName
             };
         }
-        private void SaveFile(string configName, string content)
+        private void SaveAndCopyFile(string configName, string content)
         {
-            string tmpPath = Path.Combine(config.Directory.TmpRootPhysicalPath, configName);
-            string factPath = Path.Combine(config.Directory.FactRootPhysicalPath, configName);
+            string tmpPath = Path.Combine(config.Preservation.TmpRootPhysicalPath, configName);
             File.WriteAllText(tmpPath, content, Encoding.UTF8);
+            this.CopyFile(configName);
+        }
+        private void CopyFile(string configName)
+        {
+            string tmpPath = Path.Combine(config.Preservation.TmpRootPhysicalPath, configName);
+            string factPath = Path.Combine(config.Preservation.FactRootPhysicalPath, configName);
             File.Copy(tmpPath, factPath, true);
+        }
+        public void CopyFiles(IEnumerable<string> files)
+        {
+            if (files != null)
+            {
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        this.CopyFile(file);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+        }
+        public void SaveLastChangedTime(DateTime ltime)
+        {
+            var fileName = config.Preservation.TmpTimeLocalName;
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                string path = Path.Combine(config.Preservation.TmpRootPhysicalPath, fileName);
+                File.WriteAllText(path, ltime.ToString("yyyy-MM-dd HH:mm:ss"));
+            }
+        }
+        private void SaveFileList(IEnumerable<string> files)
+        {
+            StringBuilder tmp = new StringBuilder();
+            foreach (var file in files)
+            {
+                tmp.Append(',');
+                tmp.Append(file);
+            }
+            if (tmp.Length > 0)
+            {
+                tmp.Remove(0, 1);
+                string path = Path.Combine(config.Preservation.TmpRootPhysicalPath, config.Preservation.TmpFilesLocalName);
+                File.WriteAllText(path, tmp.ToString(), Encoding.UTF8);
+            }
+        }
+        private void SaveItems(IDictionary<string, string> items)
+        {
+            var fileName = config.Preservation.TmpItemsLocalName;
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                Task.Run(() =>
+                {
+                    string path = Path.Combine(config.Preservation.TmpRootPhysicalPath, fileName);
+                    XElement root = new XElement("items");
+                    foreach (var kv in items)
+                    {
+                        this.AddElementItem(root, kv.Key, kv.Value);
+                    }
+                    root.Save(path);
+                });
+            }
+        }
+        private void AddElementItem(XElement root, string key, string value)
+        {
+            root.Add(new XElement("item", new XAttribute("key", key), new XAttribute("value", value)));
+        }
+        private void AddOrSetItem(string key, string value)
+        {
+            var fileName = config.Preservation.TmpItemsLocalName;
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                Task.Run(() =>
+                {
+                    string path = Path.Combine(config.Preservation.TmpRootPhysicalPath, fileName);
+                    try
+                    {
+                        XElement root = XElement.Load(path);
+                        var ele = root.Elements("item").FirstOrDefault(e => e.Attribute("key").Value == key);
+                        if (ele == null)
+                        {
+                            this.AddElementItem(root, key, value);
+                        }
+                        else
+                        {
+                            ele.Attribute("value").SetValue(value);
+                        }
+                        root.Save(path);
+                    }
+                    catch { }
+                });
+            }
+        }
+        public DateTime GetLastChangedTime()
+        {
+            var content = this._fetcher.GetLastChangedTime(new FetchFilter
+            {
+                AppName = config.ClientInfo.AppName,
+                Version = config.ClientInfo.Version,
+                Environment = config.ClientInfo.Environment
+            });
+            return DateTime.Parse(content);
         }
     }
 }

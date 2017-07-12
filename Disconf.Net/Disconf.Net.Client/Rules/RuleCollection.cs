@@ -32,14 +32,7 @@ namespace Disconf.Net.Client.Rules
             T rule;
             if (this._rules.TryGetValue(configName, out rule))
             {
-                try
-                {
-                    rule.ConfigChanged(changedValue);
-                }
-                catch (Exception ex)
-                {
-                    //TODO: warning
-                }
+                rule.ConfigChanged(changedValue);
             }
         }
     }

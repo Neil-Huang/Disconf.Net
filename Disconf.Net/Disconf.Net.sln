@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disconf.Net.Web", "Disconf.Net.Web\Disconf.Net.Web.csproj", "{7FB4AD0E-96E3-4F42-BA3D-ED5B61911CC4}"
 EndProject
@@ -16,6 +16,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disconf.Net.Repositories", "Disconf.Net.Repositories\Disconf.Net.Repositories.csproj", "{0432826D-D89E-49A3-A437-EAAA86F594A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disconf.Net.Core", "Disconf.Net.Core\Disconf.Net.Core.csproj", "{F08853FF-4F87-468E-A06A-68E4CE0E3DA3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 Client", "03 Client", "{9B930177-D958-49CA-928B-2585C722F41A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disconf.Net.Client", "Disconf.Net.Client\Disconf.Net.Client.csproj", "{E65D4EC3-B0B2-4854-BDD1-0AA57F459340}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 Common", "01 Common", "{BE05C5E3-DED0-4260-89DD-EAFFA2FF1947}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 Web", "02 Web", "{23CB7126-7D57-4ABB-9C6F-D3FFA8295663}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disconf.Net.ConsoleTest", "Disconf.Net.ConsoleTest\Disconf.Net.ConsoleTest.csproj", "{9FE98459-8C07-49B7-ABCE-49ABFB6C1688}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,9 +61,28 @@ Global
 		{F08853FF-4F87-468E-A06A-68E4CE0E3DA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F08853FF-4F87-468E-A06A-68E4CE0E3DA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F08853FF-4F87-468E-A06A-68E4CE0E3DA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E65D4EC3-B0B2-4854-BDD1-0AA57F459340}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E65D4EC3-B0B2-4854-BDD1-0AA57F459340}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E65D4EC3-B0B2-4854-BDD1-0AA57F459340}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E65D4EC3-B0B2-4854-BDD1-0AA57F459340}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FE98459-8C07-49B7-ABCE-49ABFB6C1688}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FE98459-8C07-49B7-ABCE-49ABFB6C1688}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FE98459-8C07-49B7-ABCE-49ABFB6C1688}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FE98459-8C07-49B7-ABCE-49ABFB6C1688}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7FB4AD0E-96E3-4F42-BA3D-ED5B61911CC4} = {23CB7126-7D57-4ABB-9C6F-D3FFA8295663}
+		{4C522FD9-9E4D-4636-8735-8A683A72FDF2} = {23CB7126-7D57-4ABB-9C6F-D3FFA8295663}
+		{EFAE8681-F658-4871-B32D-FCF2AD984FE8} = {23CB7126-7D57-4ABB-9C6F-D3FFA8295663}
+		{3ACBD6E8-5322-4863-B7DD-DE0EABB3F3BF} = {23CB7126-7D57-4ABB-9C6F-D3FFA8295663}
+		{9E5E62C4-BC57-4593-9428-F0946DBCBB89} = {23CB7126-7D57-4ABB-9C6F-D3FFA8295663}
+		{0432826D-D89E-49A3-A437-EAAA86F594A2} = {23CB7126-7D57-4ABB-9C6F-D3FFA8295663}
+		{F08853FF-4F87-468E-A06A-68E4CE0E3DA3} = {BE05C5E3-DED0-4260-89DD-EAFFA2FF1947}
+		{E65D4EC3-B0B2-4854-BDD1-0AA57F459340} = {BE05C5E3-DED0-4260-89DD-EAFFA2FF1947}
+		{9FE98459-8C07-49B7-ABCE-49ABFB6C1688} = {9B930177-D958-49CA-928B-2585C722F41A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8

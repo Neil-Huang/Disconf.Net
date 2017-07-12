@@ -28,5 +28,11 @@ namespace Disconf.Net.Client.Fetch
         /// </summary>
         /// <returns></returns>
         string GetZkHosts();
+        /// <summary>
+        /// 获取指定应用的最后一次更新时间
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        string GetLastChangedTime(FetchFilter filter);
     }
 }

@@ -54,11 +54,15 @@ namespace Disconf.Net.Core.Zookeeper
         }
         public virtual string GetZkRootPath()
         {
-            return Path.Combine("\\", AppName, HashAlgorithmHelper<MD5CryptoServiceProvider>.ComputeHash(Version), Environment).Replace("\\", "/");
+            //return Path.Combine("\\", AppName, HashAlgorithmHelper<MD5CryptoServiceProvider>.ComputeHash(Version), Environment);
+            string path = string.Format("/{0}/{1}/{2}", AppName, HashAlgorithmHelper<MD5CryptoServiceProvider>.ComputeHash(Version), Environment);
+            return path;
         }
         public virtual string GetZkPath(string znodeName)
         {
-            return Path.Combine(this.GetZkRootPath(), znodeName).Replace("\\", "/");
+            //return Path.Combine(this.GetZkRootPath(), znodeName);
+            string path = this.GetZkRootPath() + "/" + znodeName;
+            return path;
         }
 
         public IEnumerable<string> GetAllZnodes()

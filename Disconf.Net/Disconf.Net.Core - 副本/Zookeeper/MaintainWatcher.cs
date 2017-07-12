@@ -1,5 +1,4 @@
-﻿using Disconf.Net.Core.Utils;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +19,6 @@ namespace Disconf.Net.Core.Zookeeper
         /// 重试时间间隔
         /// </summary>
         const int RetryIntervalMillisecond = 1000;
-        /// <summary>
-        /// znode设置类
-        /// </summary>
-        /// <param name="connectionString">zookeeper连接字符串</param>
-        /// <param name="timeOut">zookeeper session timout,单位毫秒(ms)</param>
         public MaintainWatcher(string connectionString, int timeOut)
             : base(connectionString, timeOut)
         {
@@ -37,35 +31,41 @@ namespace Disconf.Net.Core.Zookeeper
                 var stat = this.ZooKeeper.Exists(zkPath, false);
                 if (stat != null)
                 {
-                    this.RemoveTmpChildNode(zkPath);//先删除子节点，再更新值保证不会出现客户端已经更新完并新增了节点，而服务端还没删完的情况
                     this.ZooKeeper.SetData(zkPath, data, -1);
                 }
                 else
                 {
-                    this.ZooKeeper.CreateWithPath(zkPath, data, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent);
+                    this.CreateNode(zkPath,data);
                 }
             });
         }
-        /// <summary>
-        /// 移除临时子节点，表明该节点目前已更新，客户端需要重新下载
-        /// </summary>
-        /// <param name="path"></param>
-        private void RemoveTmpChildNode(string path)
+
+        private bool CreateNode(string zkPath, byte[] data)
         {
-            var childs = this.ZooKeeper.GetChildren(path, false);
-            if (childs != null && childs.Any())
+            //只能一级一级的创建
+            var list = zkPath.Substring(1).Split('/');
+
+            for (int i = 0; i < list.Length; i++)
             {
-                foreach (var child in childs)
+                string subPath = "";
+                for (int j = 0; j <= i; j++)
                 {
-                    this.ZooKeeper.Delete(string.Format("{0}/{1}", path, child), -1);
+                    subPath += "/" + list[j];
+                }
+                var stat = this.ZooKeeper.Exists(subPath, false);
+                if (stat == null)
+                {
+                    var str = this.ZooKeeper.Create(subPath, data, Ids.OPEN_ACL_UNSAFE, CreateMode.Persistent);
                 }
             }
+
+            return true;
         }
+
         public void Remove(string zkPath)
         {
             this._queue.Enqueue(() =>
             {
-                this.RemoveTmpChildNode(zkPath);//zookeeper在存在子节点时，不允许直接删除父节点，所以需要先删除子节点
                 this.ZooKeeper.Delete(zkPath, -1);
             });
         }
