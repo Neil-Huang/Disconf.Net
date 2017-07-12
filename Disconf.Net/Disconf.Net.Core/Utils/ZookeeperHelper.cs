@@ -10,6 +10,16 @@ namespace Disconf.Net.Core.Utils
 {
     public static class ZookeeperHelper
     {
+        /// <summary>
+        /// 根据路径创建节点
+        /// 注意：zookeeper创建节点时，只能一级一级的创建下去
+        /// </summary>
+        /// <param name="zk"></param>
+        /// <param name="path"></param>
+        /// <param name="data"></param>
+        /// <param name="acl"></param>
+        /// <param name="createMode"></param>
+        /// <returns></returns>
         public static string CreateWithPath(this ZooKeeper zk, string path, byte[] data, IEnumerable<ACL> acl, CreateMode createMode)
         {
             var tmp = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
